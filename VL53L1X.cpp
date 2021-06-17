@@ -162,9 +162,9 @@ bool VL53L1X::init(bool io_2v8)
 void VL53L1X::writeReg(uint16_t reg, uint8_t value)
 {
   bus->beginTransmission(address);
-  bus->write((reg >> 8) & 0xFF); // reg high byte
-  bus->write( reg       & 0xFF); // reg low byte
-  bus->write(value);
+  bus->write((uint8_t)((reg >> 8) & 0xFF)); // reg high byte
+  bus->write((uint8_t)(reg & 0xFF)); // reg low byte
+  bus->write((uint8_t)value);
   last_status = bus->endTransmission();
 }
 
@@ -172,10 +172,10 @@ void VL53L1X::writeReg(uint16_t reg, uint8_t value)
 void VL53L1X::writeReg16Bit(uint16_t reg, uint16_t value)
 {
   bus->beginTransmission(address);
-  bus->write((reg >> 8) & 0xFF); // reg high byte
-  bus->write( reg       & 0xFF); // reg low byte
-  bus->write((value >> 8) & 0xFF); // value high byte
-  bus->write( value       & 0xFF); // value low byte
+  bus->write((uint8_t)((reg >> 8) & 0xFF)); // reg high byte
+  bus->write((uint8_t)(reg & 0xFF));		  // reg low byte
+  bus->write((uint8_t)((value >> 8) & 0xFF)); // value high byte
+  bus->write((uint8_t)(value & 0xFF));		// value low byte
   last_status = bus->endTransmission();
 }
 
@@ -183,12 +183,12 @@ void VL53L1X::writeReg16Bit(uint16_t reg, uint16_t value)
 void VL53L1X::writeReg32Bit(uint16_t reg, uint32_t value)
 {
   bus->beginTransmission(address);
-  bus->write((reg >> 8) & 0xFF); // reg high byte
-  bus->write( reg       & 0xFF); // reg low byte
-  bus->write((value >> 24) & 0xFF); // value highest byte
-  bus->write((value >> 16) & 0xFF);
-  bus->write((value >>  8) & 0xFF);
-  bus->write( value        & 0xFF); // value lowest byte
+  bus->write((uint8_t)((reg >> 8) & 0xFF)); // reg high byte
+  bus->write((uint8_t)( reg       & 0xFF)); // reg low byte
+  bus->write((uint8_t)((value >> 24) & 0xFF)); // value highest byte
+  bus->write((uint8_t)((value >> 16) & 0xFF));
+  bus->write((uint8_t)((value >>  8) & 0xFF));
+  bus->write((uint8_t)( value        & 0xFF)); // value lowest byte
   last_status = bus->endTransmission();
 }
 
@@ -198,8 +198,8 @@ uint8_t VL53L1X::readReg(regAddr reg)
   uint8_t value;
 
   bus->beginTransmission(address);
-  bus->write((reg >> 8) & 0xFF); // reg high byte
-  bus->write( reg       & 0xFF); // reg low byte
+  bus->write((uint8_t)((reg >> 8) & 0xFF)); // reg high byte
+  bus->write((uint8_t)( reg       & 0xFF)); // reg low byte
   last_status = bus->endTransmission();
 
   bus->requestFrom(address, (uint8_t)1);
@@ -214,8 +214,8 @@ uint16_t VL53L1X::readReg16Bit(uint16_t reg)
   uint16_t value;
 
   bus->beginTransmission(address);
-  bus->write((reg >> 8) & 0xFF); // reg high byte
-  bus->write( reg       & 0xFF); // reg low byte
+  bus->write((uint8_t)((reg >> 8) & 0xFF)); // reg high byte
+  bus->write((uint8_t)( reg       & 0xFF)); // reg low byte
   last_status = bus->endTransmission();
 
   bus->requestFrom(address, (uint8_t)2);
@@ -231,8 +231,8 @@ uint32_t VL53L1X::readReg32Bit(uint16_t reg)
   uint32_t value;
 
   bus->beginTransmission(address);
-  bus->write((reg >> 8) & 0xFF); // reg high byte
-  bus->write( reg       & 0xFF); // reg low byte
+  bus->write((uint8_t)((reg >> 8) & 0xFF)); // reg high byte
+  bus->write((uint8_t)( reg       & 0xFF)); // reg low byte
   last_status = bus->endTransmission();
 
   bus->requestFrom(address, (uint8_t)4);
@@ -544,6 +544,10 @@ uint16_t VL53L1X::read(bool blocking)
         return 0;
       }
     }
+  }else{
+	  if (!dataReady()) {
+		  return 0;
+	  }
   }
 
   readResults();
@@ -667,8 +671,8 @@ void VL53L1X::setupManualCalibration()
 void VL53L1X::readResults()
 {
   bus->beginTransmission(address);
-  bus->write((RESULT__RANGE_STATUS >> 8) & 0xFF); // reg high byte
-  bus->write( RESULT__RANGE_STATUS       & 0xFF); // reg low byte
+  bus->write((uint8_t)((RESULT__RANGE_STATUS >> 8) & 0xFF)); // reg high byte
+  bus->write((uint8_t)( RESULT__RANGE_STATUS       & 0xFF)); // reg low byte
   last_status = bus->endTransmission();
 
   bus->requestFrom(address, (uint8_t)17);
